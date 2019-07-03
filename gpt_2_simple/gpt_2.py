@@ -634,9 +634,9 @@ def embed(sess,
     
     for p in prefix:
         embeddings = []
-        if prefix:
+        if p:
             context = tf.placeholder(tf.int32, [batch_size, None])
-            context_tokens = enc.encode(prefix)
+            context_tokens = enc.encode(p)
             print(len(context_tokens))
 
         np.random.seed(seed)
