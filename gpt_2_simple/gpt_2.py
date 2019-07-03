@@ -642,7 +642,7 @@ def embed(sess,
                                     past=None, reuse=tf.AUTO_REUSE,emb=True)
         e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
         embeddings.append(e)
-    return np.array(embeddings)
+    return embeddings
     ###################################
 
 
