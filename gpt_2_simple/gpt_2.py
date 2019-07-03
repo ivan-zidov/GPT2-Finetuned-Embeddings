@@ -633,9 +633,10 @@ def embed(sess,
         hparams.override_from_dict(json.load(f))
     
     embeddings = []
+    context = tf.placeholder(tf.int32, [batch_size, None])
     for p in prefix:
         
-        context = tf.placeholder(tf.int32, [batch_size, None])
+        
         context_tokens = enc.encode(p)
 
         lm_output = model.model(hparams=hparams, X= context,
