@@ -632,20 +632,17 @@ def embed(sess,
     with open(os.path.join(checkpoint_path, 'hparams.json')) as f:
         hparams.override_from_dict(json.load(f))
     
+    embeddings = []
     for p in prefix:
-        embeddings = []
-        if p:
-            context = tf.placeholder(tf.int32, [batch_size, None])
-            context_tokens = enc.encode(p)
-            print(len(context_tokens))
+        
+        context = tf.placeholder(tf.int32, [batch_size, None])
+        context_tokens = enc.encode(p)
 
-        np.random.seed(seed)
-        tf.set_random_seed(seed)
         lm_output = model.model(hparams=hparams, X= context,
                                     past=None, reuse=tf.AUTO_REUSE,emb=True)
         e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
         embeddings.append(e)
-    return embeddings
+    return np.array(embeddings)
     ###################################
 
 
