@@ -650,9 +650,10 @@ def embed(sess,
             embeddings.append(e)
             
             pbar.update(1)
-            if len(embeddings)>save_size:
+            if len(embeddings)==save_size:
                 pickle.dump(embeddings, f)
                 embeddings = []
+        f.close()
         return
     ###################################
 
