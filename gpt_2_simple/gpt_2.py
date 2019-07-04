@@ -13,6 +13,7 @@ import time
 from datetime import datetime
 import csv
 import argparse
+from tqdm import tqdm_notebook as tqdm
 
 # if in Google Colaboratory
 try:
@@ -611,7 +612,7 @@ def embed(sess,
              top_k=0,
              top_p=0.0,
              include_prefix=True,
-             layer_type="h"):
+             layer_type="h",save_size=10):
     if batch_size is None:
         batch_size = 1
     assert nsamples % batch_size == 0
@@ -633,17 +634,25 @@ def embed(sess,
         hparams.override_from_dict(json.load(f))
     
     embeddings = []
-    context = tf.placeholder(tf.int32, [batch_size, None])
-    for p in prefix:
-        
-        
-        context_tokens = enc.encode(p)
+    with tqdm(total=len(prefix)) as pbar:
+        pbar.update(0)
+        f=open('X.p', 'wb')
+        context = tf.placeholder(tf.int32, [batch_size, None])
+        for p in prefix:
+            
+            
+            context_tokens = enc.encode(p)
 
-        lm_output = model.model(hparams=hparams, X= context,
-                                    past=None, reuse=tf.AUTO_REUSE,emb=True)
-        e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
-        embeddings.append(e)
-    return embeddings
+            lm_output = model.model(hparams=hparams, X= context,
+                                        past=None, reuse=tf.AUTO_REUSE,emb=True)
+            e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
+            embeddings.append(e)
+            
+            pbar.update(1)
+            if len(embeddings)>save_size:
+                pickle.dump(embeddings, f)
+                embeddings = []
+        return
     ###################################
 
 
