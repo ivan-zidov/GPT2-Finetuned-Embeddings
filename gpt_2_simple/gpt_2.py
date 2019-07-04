@@ -14,6 +14,7 @@ from datetime import datetime
 import csv
 import argparse
 from tqdm import tqdm_notebook as tqdm
+import pickle
 
 # if in Google Colaboratory
 try:
