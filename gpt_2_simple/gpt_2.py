@@ -653,6 +653,7 @@ def embed(sess,
             if len(embeddings)==save_size:
                 pickle.dump(embeddings, f)
                 embeddings = []
+        pickle.dump(embeddings, f)
         f.close()
         return
     ###################################
