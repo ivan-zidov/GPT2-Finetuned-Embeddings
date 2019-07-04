@@ -639,13 +639,13 @@ def embed(sess,
         pbar.update(0)
         f=open('X.p', 'wb')
         context = tf.placeholder(tf.int32, [batch_size, None])
+        lm_output = model.model(hparams=hparams, X= context,past=None, reuse=tf.AUTO_REUSE,emb=True)
         for p in prefix:
             
             
             context_tokens = enc.encode(p)
 
-            lm_output = model.model(hparams=hparams, X= context,
-                                        past=None, reuse=tf.AUTO_REUSE,emb=True)
+            
             e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
             embeddings.append(e)
             
