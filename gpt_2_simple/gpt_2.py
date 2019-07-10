@@ -602,7 +602,7 @@ def embed(sess,
              run_name='run1',
              return_as_list=False,
              truncate=None,
-             destination_path=None,
+             destination_path="X.p",
              sample_delim='=' * 20 + '\n',
              prefix=None,
              seed=None,
@@ -637,7 +637,7 @@ def embed(sess,
     embeddings = []
     with tqdm(total=len(prefix)) as pbar:
         pbar.update(0)
-        f=open('X.p', 'wb')
+        f=open('destination_path', 'wb')
         context = tf.placeholder(tf.int32, [batch_size, None])
         lm_output = model.model(hparams=hparams, X= context,past=None, reuse=tf.AUTO_REUSE,emb=True)
         for p in prefix:
@@ -655,7 +655,7 @@ def embed(sess,
                 embeddings = []
         pickle.dump(embeddings, f)
         f.close()
-        return
+        return embeddings
     ###################################
 
 
