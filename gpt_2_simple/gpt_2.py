@@ -647,7 +647,9 @@ def embed(sess,
 
             
             e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
-            embeddings.append(np.mean(e[10:,:,:,:,:],axis=3).flatten())
+            smal=np.mean(e[10:,:,:,:,:],axis=3).flatten()
+            print(smal.shape)
+            embeddings.append(smal)
             
             pbar.update(1)
             if len(embeddings)==save_size:
