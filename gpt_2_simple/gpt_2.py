@@ -636,8 +636,8 @@ def embed(sess,
                     embeddings = []
             pickle.dump(embeddings, f)
             f.close()
-            context = None
-            lm_output = None
+            del context 
+            del lm_output 
             return embeddings
     else:
         context = tf.placeholder(tf.int32, [batch_size, None])
@@ -646,8 +646,8 @@ def embed(sess,
             context_tokens = enc.encode(p)
             e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
             embeddings.append(e[0])
-        context = None
-        lm_output = None
+        del context
+        del lm_output
         return embeddings
     ###################################
 
