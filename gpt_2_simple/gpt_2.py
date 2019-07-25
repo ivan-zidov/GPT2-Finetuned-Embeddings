@@ -633,7 +633,7 @@ def embed(sess,
             for p in prefix:
                 context_tokens = enc.encode(p)
                 e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
-                pref_embeddings.append(e[0])
+                pref_emb.append(e[0])
             embeddings.append(pref_emb)
             pbar.update(1)
     if save:
