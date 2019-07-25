@@ -600,29 +600,14 @@ def encode_dataset(file_path, out_path='text_encoded.npz',
     
 def embed(sess,
              run_name='run1',
-             return_as_list=False,
-             truncate=None,
              destination_path="X.p",
-             sample_delim='=' * 20 + '\n',
              prefix=None,
-             seed=None,
-             nsamples=1,
              batch_size=1,
-             length=1023,
-             temperature=0.7,
-             top_k=0,
-             top_p=0.0,
-             include_prefix=True,
-             layer_type="h",save_size=10):
-    if batch_size is None:
-        batch_size = 1
-    assert nsamples % batch_size == 0
+             layer_type="h",save_size=0):
 
-    if nsamples == 1:
-        sample_delim = ''
-
-    if prefix == '':
-        prefix = None
+    
+    if type(prefix) != list:
+        prefix = [prefix]
 
     CHECKPOINT_DIR = 'checkpoint'
     SAMPLE_DIR = 'samples'
@@ -635,28 +620,30 @@ def embed(sess,
         hparams.override_from_dict(json.load(f))
     
     embeddings = []
-    with tqdm(total=len(prefix)) as pbar:
-        pbar.update(0)
-        f=open(destination_path, 'wb')
+    if save_size>0:
+        with tqdm(total=len(prefix)) as pbar:
+            pbar.update(0)
+            f=open(destination_path, 'wb')
+            context = tf.placeholder(tf.int32, [batch_size, None])
+            lm_output = model.model(hparams=hparams, X= context,past=None, reuse=tf.AUTO_REUSE,emb=True)
+            for p in prefix:
+                context_tokens = enc.encode(p)
+                e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
+                embeddings.append(e[0])
+                pbar.update(1)
+                if len(embeddings)==save_size:
+                    pickle.dump(embeddings, f)
+                    embeddings = []
+            pickle.dump(embeddings, f)
+            f.close()
+            return embeddings
+    else:
         context = tf.placeholder(tf.int32, [batch_size, None])
         lm_output = model.model(hparams=hparams, X= context,past=None, reuse=tf.AUTO_REUSE,emb=True)
         for p in prefix:
-            
-            
             context_tokens = enc.encode(p)
-
-            
             e = sess.run(lm_output[layer_type], feed_dict={context: batch_size*[context_tokens]})
-            #smal=np.mean(e[0][11:,:,:,:,:],axis=3).flatten()
-
             embeddings.append(e[0])
-            
-            pbar.update(1)
-            if len(embeddings)==save_size:
-                pickle.dump(embeddings, f)
-                embeddings = []
-        pickle.dump(embeddings, f)
-        f.close()
         return embeddings
     ###################################
 
